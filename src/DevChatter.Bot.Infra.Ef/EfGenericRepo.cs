@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using DevChatter.Bot.Core.Data;
 using DevChatter.Bot.Core.Data.Model;
@@ -23,6 +23,11 @@ namespace DevChatter.Bot.Infra.Ef
 
         public List<T> List<T>(ISpecification<T> spec) where T : DataEntity
         {
+            if (spec == null)
+            {
+                spec = DataItemPolicy<T>.All();
+            }
+
             DbSet<T> dbSet = _db.Set<T>();
             return spec != null ? dbSet.Where(spec.Criteria).ToList() : dbSet.ToList();
         }

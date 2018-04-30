@@ -24,8 +24,13 @@ namespace DevChatter.Bot.Core.Data.Caching
             _internalRepo.Create(dataItemList);
         }
 
-        public List<T> List<T>(ISpecification<T> spec = null) where T : DataEntity
+        public List<T> List<T>(ISpecification<T> spec) where T : DataEntity
         {
+            if (spec == null)
+            {
+                spec = DataItemPolicy<T>.All();
+            }
+
             List<T> item = _cacheLayer.TryGet<List<T>>(spec.CacheKey);
             if (item == null)
             {
