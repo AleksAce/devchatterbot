@@ -6,8 +6,8 @@ namespace DevChatter.Bot.Core.Data.Caching
 {
     public class CachedRepository : IRepository
     {
-        private IRepository _internalRepo;
-        private ICacheLayer _cacheLayer;
+        private readonly IRepository _internalRepo;
+        private readonly ICacheLayer _cacheLayer;
         public CachedRepository(IRepository repository, ICacheLayer cacheLayer)
         {
             _internalRepo = repository;

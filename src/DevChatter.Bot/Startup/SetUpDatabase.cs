@@ -8,13 +8,15 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
+using InMemoryCacheLayer = DevChatter.Bot.Caching.InMemoryCacheLayer;
 using QuizQuestion = DevChatter.Bot.Core.Data.Model.QuizQuestion;
 
 namespace DevChatter.Bot.Startup
 {
     public static class SetUpDatabase
     {
-        public static IRepository SetUpRepository(string connectionString)
+        public static IRepository SetUpRepository(string connectionString, IMemoryCache cache)
         {
             DbContextOptions<AppDataContext> options = new DbContextOptionsBuilder<AppDataContext>()
                 .UseSqlServer(connectionString)
@@ -23,7 +25,7 @@ namespace DevChatter.Bot.Startup
             var appDataContext = new AppDataContext(options);
 
             EnsureDatabase(appDataContext);
-            IRepository repository = new CachedRepository(new EfGenericRepo(appDataContext), new InMemoryCacheLayer());
+            IRepository repository = new CachedRepository(new EfGenericRepo(appDataContext), new InMemoryCacheLayer(cache));
             EnsureInitialData(repository);
 
             return repository;

@@ -7,6 +7,7 @@ using DevChatter.Bot.Infra.Twitch;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace DevChatter.Bot.Startup
 {
@@ -17,7 +18,10 @@ namespace DevChatter.Bot.Startup
             var services = new ServiceCollection();
             services.AddLogging();
 
-            var repository = SetUpDatabase.SetUpRepository(botConfiguration.DatabaseConnectionString);
+            var provider = services.AddMemoryCache().BuildServiceProvider();
+            var cache = provider.GetService<IMemoryCache>();
+
+            var repository = SetUpDatabase.SetUpRepository(botConfiguration.DatabaseConnectionString, cache);
 
             var builder = new ContainerBuilder();
 
@@ -32,6 +36,7 @@ namespace DevChatter.Bot.Startup
             builder.Register(ctx => botConfiguration.CommandHandlerSettings).AsSelf().SingleInstance();
             builder.Register(ctx => botConfiguration.TwitchClientSettings).AsSelf().SingleInstance();
 
+            builder.Register(ctx => repository).As<IMemoryCache>().SingleInstance();
             builder.Register(ctx => repository).As<IRepository>().SingleInstance();
 
             var simpleCommands = repository.List<SimpleCommand>();

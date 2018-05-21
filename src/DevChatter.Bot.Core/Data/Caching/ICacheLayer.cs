@@ -1,5 +1,3 @@
-using DevChatter.Bot.Core.Data.Model;
-
 namespace DevChatter.Bot.Core.Data.Caching
 {
     public interface ICacheLayer
